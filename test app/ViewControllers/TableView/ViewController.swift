@@ -21,8 +21,20 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         //creatadTable(myTable)
         createdImageView(myImageView)
-        //myImageView = apiImage.getImage(imageView: myImageView)
-        apiPosts.request()
+        apiPosts.request { result in
+            switch result {
+            case .failure(let error):
+                print(error)
+            case .success(let data):
+                let posts = try? JSONDecoder().decode([Post].self, from: data)
+                print(posts?.count ?? 0)
+                let post = posts?.randomElement()
+                print(post?.id ?? 0)
+                print(post?.title ?? "0")
+                
+            }
+            
+        }
     }
     private func createdImageView(_ imageView: UIImageView) {
         imageView.frame = CGRect(x: 0, y: 100, width: 400, height: 400)
@@ -30,9 +42,13 @@ class ViewController: UIViewController {
         imageView.backgroundColor = .orange
         let myQuoew = DispatchQueue.global(qos: .utility)
         myQuoew.async {
-            let image = self.apiImage.reqest()
-            DispatchQueue.main.async {
-                imageView.image = image
+            
+            self.apiImage.getRandomDogImage { image in
+                if let image = image {
+                    imageView.image = image
+                } else {
+                    print("error dounload image")
+                }
             }
         }
         view.addSubview(imageView)

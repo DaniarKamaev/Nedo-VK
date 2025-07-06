@@ -9,13 +9,14 @@ import UIKit
 
 
 class PostsApiWork {
-        func request() {
+    func request(completion: @escaping (Result<Data, Error>) -> Void ) {
         let urlString = "https://jsonplaceholder.typicode.com/photos"
         guard let url = URL(string: urlString) else { return }
         let request = URLRequest(url: url)
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
                 print(error)
+                completion(.failure(error))
                 return
             }
             
@@ -23,14 +24,7 @@ class PostsApiWork {
                 print("No data received")
                 return
             }
-            
-                let posts = try? JSONDecoder().decode([Post].self, from: data)
-                print("Received \(posts!.count) posts")
-           
-            if let firstPost = posts!.randomElement() {
-                    print("First post ID: \(firstPost.id)")
-                    print("First post title: \(firstPost.title)")
-                }
+            completion(.success(data))
         }
         task.resume()
     }
