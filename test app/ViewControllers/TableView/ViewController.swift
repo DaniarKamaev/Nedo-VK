@@ -14,28 +14,38 @@ class ViewController: UIViewController {
     let data = DataH.shared
     var myTable = UITableView()
     var myImageView = UIImageView()
+    var Posts: [Post] = []
     var indificator = "cell"
     let url = ""
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        //creatadTable(myTable)
-        createdImageView(myImageView)
-        apiPosts.request { result in
+        creatadTable(myTable)
+        loadData()
+        //createdImageView(myImageView)
+       
+    }
+    private func loadData() {
+        apiPosts.request { [weak self] result in
+            DispatchQueue.main.async {
             switch result {
             case .failure(let error):
                 print(error)
             case .success(let data):
                 let posts = try? JSONDecoder().decode([Post].self, from: data)
                 print(posts?.count ?? 0)
+                self?.Posts = posts!
+                print(self?.Posts)
+                self?.myTable.reloadData()
                 let post = posts?.randomElement()
                 print(post?.id ?? 0)
                 print(post?.title ?? "0")
-                
             }
-            
+        }
         }
     }
+    
+    
     private func createdImageView(_ imageView: UIImageView) {
         imageView.frame = CGRect(x: 0, y: 100, width: 400, height: 400)
         imageView.center.x = view.center.x
@@ -66,11 +76,13 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 2
-    }
+        return Posts.count
+        }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = myTable.dequeueReusableCell(withIdentifier: self.indificator, for: indexPath)
+        let post = Posts[indexPath.row]
+        cell.textLabel?.text = post.title
         return cell
     }
     
