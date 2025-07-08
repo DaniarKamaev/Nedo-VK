@@ -11,13 +11,11 @@ class ViewController: UIViewController {
 
     var apiImage = ImageApiWork()
     var apiPosts = PostsApiWork()
-    let data = DataH.shared
     var myTable = UITableView()
     var myImageView = UIImageView()
     var Posts: [Post] = []
     var indificator = "cell"
-    let url = ""
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         creatadTable(myTable)
@@ -35,7 +33,7 @@ class ViewController: UIViewController {
                 let posts = try? JSONDecoder().decode([Post].self, from: data)
                 print(posts?.count ?? 0)
                 self?.Posts = posts!
-                print(self?.Posts)
+                print(self?.Posts ?? "self.Posts error 36")
                 self?.myTable.reloadData()
                 let post = posts?.randomElement()
                 print(post?.id ?? 0)
@@ -62,12 +60,15 @@ class ViewController: UIViewController {
             }
         }
         view.addSubview(imageView)
+        
     }
     func creatadTable(_ table: UITableView) {
         table.frame = view.frame
-        table.register(UITableViewCell.self, forCellReuseIdentifier: self.indificator)
+        table.register(CastomCell.self, forCellReuseIdentifier: self.indificator)
         table.delegate = self
         table.dataSource = self
+        table.rowHeight = UITableView.automaticDimension
+        table.estimatedRowHeight = 100
         view.addSubview(table)
     }
 }
@@ -76,13 +77,15 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return Posts.count
+        return Posts.count 
         }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = myTable.dequeueReusableCell(withIdentifier: self.indificator, for: indexPath)
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: self.indificator, for: indexPath) as? CastomCell else {
+            return UITableViewCell()
+        }
         let post = Posts[indexPath.row]
-        cell.textLabel?.text = post.title
+        cell.configurate(with: post, with: apiImage)
         return cell
     }
     
