@@ -20,58 +20,39 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         creatadTable(myTable)
         loadData()
-        //createdImageView(myImageView)
-       
     }
+    
     private func loadData() {
-        apiPosts.request { [weak self] result in
-            DispatchQueue.main.async {
-            switch result {
-            case .failure(let error):
+        let queue = DispatchQueue.global(qos: .userInteractive)
+        queue.async {
+            self.apiPosts.request { [weak self] result in
+                switch result {
+                case .failure(let error):
                 print(error)
-            case .success(let data):
-                let posts = try? JSONDecoder().decode([Post].self, from: data)
-                print(posts?.count ?? 0)
-                self?.Posts = posts!
-                print(self?.Posts ?? "self.Posts error 36")
-                self?.myTable.reloadData()
-                let post = posts?.randomElement()
-                print(post?.id ?? 0)
-                print(post?.title ?? "0")
-            }
-        }
-        }
-    }
-    
-    
-    private func createdImageView(_ imageView: UIImageView) {
-        imageView.frame = CGRect(x: 0, y: 100, width: 400, height: 400)
-        imageView.center.x = view.center.x
-        imageView.backgroundColor = .orange
-        let myQuoew = DispatchQueue.global(qos: .utility)
-        myQuoew.async {
-            
-            self.apiImage.getRandomDogImage { image in
-                if let image = image {
-                    imageView.image = image
-                } else {
-                    print("error dounload image")
+                case .success(let data):
+                    let posts = try? JSONDecoder().decode([Post].self, from: data)
+                    print(posts?.count ?? 0)
+                    self?.Posts = posts!
+                    print(self?.Posts ?? "self.Posts error 36")
+                    DispatchQueue.main.async {
+                        self?.myTable.reloadData()
+                    }
                 }
             }
         }
-        view.addSubview(imageView)
-        
     }
-    func creatadTable(_ table: UITableView) {
+
+    
+    private func creatadTable(_ table: UITableView) {
         table.frame = view.frame
         table.register(CastomCell.self, forCellReuseIdentifier: self.indificator)
         table.delegate = self
         table.dataSource = self
-        table.rowHeight = UITableView.automaticDimension
-        table.estimatedRowHeight = 100
+        table.rowHeight = 150
         view.addSubview(table)
     }
 }
+
 //MARK: - Extension
 extension ViewController: UITableViewDelegate, UITableViewDataSource {
     
@@ -88,8 +69,6 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
         cell.configurate(with: post, with: apiImage)
         return cell
     }
-    
-    
 }
 
 
