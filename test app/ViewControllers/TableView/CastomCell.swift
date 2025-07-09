@@ -67,7 +67,7 @@ class CastomCell: UITableViewCell {
                 postLable.topAnchor.constraint(equalTo: contentView.topAnchor, constant: -40),
                 postLable.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -60),
                 
-                postSmallText.leadingAnchor.constraint(equalTo: postPhoto.trailingAnchor, constant: 35),
+                postSmallText.leadingAnchor.constraint(equalTo: postPhoto.trailingAnchor, constant: 45),
                 postSmallText.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -5),
                 postSmallText.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
                 postSmallText.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10)
